@@ -1,0 +1,89 @@
+#!/bin/bash
+#====================================================
+#	@kiritosshxd
+#====================================================
+_lvk=$(wget -qO- https://raw.githubusercontent.com/kiritosshxd/SSHPLUS/master/Sistema/versao)
+IP=$(wget -qO- ipv4.icanhazip.com)
+IP2=$(wget -qO- http://whatismyip.akamai.com/)
+[[ "$IP" != "$IP2" ]] && ipdovps="$IP2" || ipdovps="$IP"
+echo -e "$ipdovps" >/etc/IP
+lst=$1 && lst1=$2 && lst2=$3 && key1=$4 && key2=crz
+echo -e "America/Sao_Paulo" >/etc/timezone
+ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime >/dev/null 2>&1
+dpkg-reconfigure --frontend noninteractive tzdata >/dev/null 2>&1
+[[ -z $lst1 ]] && {
+	rm -rf $_Ink/list >/dev/null 2>&1 && cat /dev/null >~/.bash_history && history -c && exit 0
+}
+[[ ! -d /etc/SSHPlus ]] && mkdir /etc/SSHPlus
+[[ ! -d /etc/SSHPlus/v2ray ]] && mkdir /etc/SSHPlus/v2ray
+[[ ! -d /etc/SSHPlus/senha ]] && mkdir /etc/SSHPlus/senha
+[[ ! -e /etc/SSHPlus/Exp ]] && touch /etc/SSHPlus/Exp
+[[ ! -d /etc/SSHPlus/userteste ]] && mkdir /etc/SSHPlus/userteste
+[[ ! -d /etc/SSHPlus/.tmp ]] && mkdir /etc/SSHPlus/.tmp
+[[ ! -d /etc/bot ]] && mkdir /etc/bot
+[[ ! -d /etc/bot/info-usuarios ]] && mkdir /etc/bot/info-usuarios
+[[ ! -d /etc/bot/archivos ]] && mkdir /etc/bot/archivos
+[[ ! -d /etc/bot/reventa ]] && mkdir /etc/bot/reventa
+[[ ! -d /etc/bot/suspendidos ]] && mkdir /etc/bot/suspendidos
+[[ ! -d /etc/rec ]] && mkdir /etc/rec
+[[ ! -e /etc/bot/lista_activos ]] && touch /etc/bot/lista_activos
+[[ ! -e /etc/bot/lista_suspendidos ]] && touch /etc/bot/lista_suspendidos
+echo -e 'by: @KIRITO_SSH' >/usr/lib/sshplus && cat /usr/lib/sshplus >$lst2/licencia && cat /usr/lib/sshplus > /etc/SSHPlus/.tmp/crazy
+netstat -nplt | grep -w 'apache2' | grep -w '80' && sed -i "s/Listen 80/Listen 81/g" /etc/apache2/ports.conf && service apache2 restart
+[[ "$(grep -o '#Port 22' /etc/ssh/sshd_config)" == "#Port 22" ]] && sed -i "s;#Port 22;Port 22;" /etc/ssh/sshd_config && service ssh restart
+grep -v "^PasswordAuthentication" /etc/ssh/sshd_config >/tmp/passlogin && mv /tmp/passlogin /etc/ssh/sshd_config
+echo "PasswordAuthentication yes" >>/etc/ssh/sshd_config
+_dir1='/bin'
+_dir2='/etc/SSHPlus'
+rm $_dir2/ShellBot.sh $_dir2/cabecera $_dir2/open.py $_dir2/proxy.py $_dir2/wsproxy.py >/dev/null 2>&1
+_modulos=("addhost" "delhost" "cambiocontraseña" "crearusuario" "expcleaner" "cambiardate" "eliminar" "creartest" "verifbot" "limidrop" "cambiarlimite" "ayuda" "sshmonitor" "badvpn" "userbackup" "instsqd" "blockt" "optimizar" "menu" "speedtest" "banner" "rootpass" "reiniciarservicios" "reiniciarsistema" "attesscript" "conexion" "delscript" "detalles" "botssh" "infousuarios" "verifatt" "limiter" "uexpired" "cabecera" "bot" "open.py" "proxy.py" "wsproxy.py" "trojan-go" "onlineapp" "swapmemory" "initbot" "initcheck" "pkill.sh")
+for archivo in ${_modulos[@]}; do
+	[[ -e $_dir1/$archivo ]] && rm $_dir1/$archivo >/dev/null 2>&1
+	wget -c -P $_dir1 https://raw.githubusercontent.com/kiritosshxd/SSHPLUS/main/Modulos/$archivo
+	chmod +x $_dir1/$archivo
+done
+mv $_dir1/cabecera $_dir1/bot $_dir1/open.py $_dir1/proxy.py $_dir1/wsproxy.py $_dir2
+_archivo_host="/etc/hosts"
+_hosts[0]="d1n212ccp6ldpw.cloudfront.net"
+_hosts[1]="dns.whatsapp.net"
+_hosts[2]="portalrecarga.vivo.com.br/recarga"
+_hosts[3]="navegue.vivo.com.br/controle/"
+_hosts[4]="navegue.vivo.com.br/pre/"
+_hosts[5]="www.whatsapp.net"
+_hosts[6]="/SSHPLUS?"
+for host in ${_hosts[@]}; do
+	if [[ "$(grep -w "$host" $_archivo_host | wc -l)" = "0" ]]; then
+		sed -i "3i\127.0.0.1 $host" $_archivo_host
+	fi
+done
+[[ ! -e /etc/autoinicio ]] && {
+	echo '#!/bin/bash
+clear
+#INICIO AUTOMATICO' >/etc/autoinicio
+	chmod +x /etc/autoinicio
+} || {
+	[[ $(ps x | grep "bot_plus" | grep -v grep | wc -l) != '0' ]] && wget -qO- https://raw.githubusercontent.com/kiritosshxd/SSHPLUS/master/Install/ShellBot.sh
+	for proceso in $(ps x | grep 'dmS' | grep -v 'grep' | awk {'print $1'}); do
+		screen -r -S "$proceso" -X quit	
+done
+	screen -wipe >/dev/null
+	echo '#!/bin/bash
+clear
+#INICIO AUTOMATICO' >/etc/autoinicio
+	chmod +x /etc/autoinicio
+}
+crontab -r >/dev/null 2>&1
+(
+	crontab -l 2>/dev/null
+	echo "@diario /bin/verifatt"
+	echo "@reboot /etc/autoinicio"
+	echo "* * * * * /etc/autoinicio"
+	echo "0 */6 * * * /bin/uexpired"
+) | crontab -
+echo "$_lvk" | sed -n '1 p' | cut -d' ' -f2 >/bin/versao && cat /bin/versao >/home/sshplus
+wget https://github.com/kiritosshxd/SSHPLUS/raw/main/Install/jq-linux64 >/dev/null 2>&1
+chmod +x jq-linux64 && mv jq-linux64 $(which jq)
+service cron restart >/dev/null 2>&1
+service ssh restart >/dev/null 2>&1
+[[ -d /var/www/html/openvpn ]] && service apache2 restart >/dev/null 2>&1
+rm -rf $lst1/lista >/dev/null 2>&1
